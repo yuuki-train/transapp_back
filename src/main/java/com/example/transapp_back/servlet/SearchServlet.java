@@ -7,60 +7,36 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import com.example.transapp_back.entity.Lines;
+import java.io.Serial;
 
-@WebServlet("/trains")
+import com.example.transapp_back.dao.SearchDAO;
+import com.example.transapp_back.logic.SearchLogic;
+
+@WebServlet("/search")
 public class SearchServlet extends HttpServlet {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        //リクエストパラメータの取得
         request.setCharacterEncoding("UTF-8");
-
-        HttpSession session = request.getSession();
-
         String departure = request.getParameter("departure");
         String destination = request.getParameter("destination");
         String depHour = request.getParameter("depHour");
         String depMinute = request.getParameter("depMinute");
-        session.setAttribute("depHour", depHour);
-        session.setAttribute("depMinute", depMinute);
 
+        //入力した駅名に対応する路線を洗い出す
+        String[] Lines = new SearchLogic().LineCheck(departure, destination);
 
-        String[] Midosuji = new Lines().getMidosuji();
-        String[] JR = new Lines().getJR();
-        boolean depMidosuji = false;
-        boolean depJR = false;
-        boolean arvMidosuji = false;
-        boolean arvJR = false;
-        int counter = Math.max(Midosuji.length, JR.length);
+        //DAOを呼び出す
+        SearchDAO dbSearch = new SearchDAO(Lines, departure, destination);
 
-        for(int i = 0; i<counter; i++){
-            if(departure == Midosuji[i]){
-                depMidosuji = true;
-            }
-            if(destination == Midosuji[i]) {
-                arvMidosuji = true;
-            }
+        //セッションに登録する
+        HttpSession session = request.getSession();
+        session.setAttribute("Lines", Lines);
 
-            if(departure == JR[i] ){
-                depJR = true;
-            }
-            if(destination == JR[i] ){
-                arvJR = true;
-            }
-        }
-
-        String[] Line = new String[2];
-        if (depMidosuji && arvMidosuji){
-            Line[0] = "御堂筋線";
-        }
-        if (depJR && arvJR){
-            Line[1] = "JR";
-        }
-
-        session.setAttribute("Line", Line);
 
     }
 }
