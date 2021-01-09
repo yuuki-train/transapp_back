@@ -1,8 +1,14 @@
 package com.example.transapp_back.repository;
 
+import com.example.transapp_back.entity.Trains;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface SearchRepository extends MongoRepository<trains,String>{
+import java.util.List;
+
+public interface SearchRepository extends MongoRepository<Trains,String>{
+    Trains findByLine(String line);
+
+
 
 }
 

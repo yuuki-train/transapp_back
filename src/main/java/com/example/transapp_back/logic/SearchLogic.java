@@ -1,17 +1,20 @@
 package com.example.transapp_back.logic;
 
+import com.example.transapp_back.dao.SearchDAO;
 import com.example.transapp_back.entity.Lines;
 
-public class SearchLogic {
-    public String[] LineCheck(String departure, String destination){
+import java.util.ArrayList;
 
-        String[] CandidateLines = new Lines().getCandidateLines();
-        String[][] Stations = new Lines().getStations();
-        String[] Lines = new String[CandidateLines.length];
+public class SearchLogic {
+    public ArrayList<String> LineCheck(String departure, String destination){
+
+        ArrayList<String> CandidateLines = new Lines().getCandidateLines();
+       ArrayList<ArrayList<String>> Stations = new Lines().getStations();
+        ArrayList<String> lines = new ArrayList<String>();
         int counter = 0;
 
-        for(int i = 0; i<CandidateLines.length; i++){
-            String[] station = Stations[i];
+        for(int i = 0; i<CandidateLines.size(); i++){
+            ArrayList<String> station = Stations.get(i);
             boolean depStation = false;
             boolean arvStation = false;
 
@@ -26,11 +29,26 @@ public class SearchLogic {
             }
 
             if(depStation && arvStation){
-                Lines[counter] = CandidateLines[i];
+                lines.add(counter,CandidateLines.get(i));
                 counter++;
             }
 
         }
-        return Lines;
+        return lines;
     }
+
+    public ArrayList<String> TrainSearch(ArrayList<String> lines, String departure, String destination){
+
+        for (int i =0; i < lines.size();i++){
+            lines.get(i);
+
+        }
+
+
+
+
+    }
+
+
+
 }

@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.Serial;
+import java.util.ArrayList;
 
 import com.example.transapp_back.dao.SearchDAO;
 import com.example.transapp_back.logic.SearchLogic;
@@ -28,14 +29,14 @@ public class SearchServlet extends HttpServlet {
         String depMinute = request.getParameter("depMinute");
 
         //入力した駅名に対応する路線を洗い出す
-        String[] Lines = new SearchLogic().LineCheck(departure, destination);
+        ArrayList<String> lines = new SearchLogic().LineCheck(departure, destination);
 
         //DAOを呼び出す
-        SearchDAO dbSearch = new SearchDAO(Lines, departure, destination);
+
 
         //セッションに登録する
         HttpSession session = request.getSession();
-        session.setAttribute("Lines", Lines);
+        session.setAttribute("Lines", lines);
 
 
     }
