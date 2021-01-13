@@ -1,21 +1,35 @@
 package com.example.transapp_back.dao;
 
-import com.example.transapp_back.entity.Trains;
-import com.example.transapp_back.repository.SearchRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientSettings;
+import com.mongodb.client.*;
+import com.mongodb.client.model.Filters;
+import org.bson.Document;
 
-@RestController
-@RequestMapping("/trains")
+import java.util.ArrayList;
+import java.util.List;
+
+
 public class SearchDAO {
-    @Autowired
-    private SearchRepository searchRepository;
+    public List<Document> dbGet(String key, String param) {
 
-    @GetMapping(value = "/{line}")
-    public Trains SearchLines(String line) {
-        return searchRepository.findByLine(line);
+        ConnectionString connection = new ConnectionString(
+                "mongodb+srv://yuuki:yuukidb@cluster0.wdfqa.mongodb.net/diagram?retryWrites=true&w=majority"
+        );
+        MongoClientSettings settings = MongoClientSettings.builder()
+                .applyConnectionString(connection)
+                .retryWrites(true)
+                .build();
+
+        MongoClient client = MongoClients.create(settings);
+        MongoDatabase database = client.getDatabase("diagram");
+        MongoCollection<Document> trains = database.getCollection("trains");
+
+        List<Document> documents = trains.find(Filters.eq(key, param)).into(new ArrayList<Document>());
+
+        client.close();
+
+        return documents;
     }
 
 }

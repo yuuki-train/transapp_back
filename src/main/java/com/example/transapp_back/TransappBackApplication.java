@@ -1,7 +1,11 @@
 package com.example.transapp_back;
 
+import com.example.transapp_back.dao.SearchDAO;
+import org.bson.Document;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import java.util.List;
 
 @SpringBootApplication
 public class TransappBackApplication {

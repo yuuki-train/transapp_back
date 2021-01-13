@@ -2,8 +2,10 @@ package com.example.transapp_back.logic;
 
 import com.example.transapp_back.dao.SearchDAO;
 import com.example.transapp_back.entity.Lines;
+import org.bson.Document;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SearchLogic {
     public ArrayList<String> LineCheck(String departure, String destination){
@@ -37,18 +39,20 @@ public class SearchLogic {
         return lines;
     }
 
-    public ArrayList<String> TrainSearch(ArrayList<String> lines, String departure, String destination){
+    public List<Document> TrainSearch(ArrayList<String> lines, String depHour, String depMinute){
+        for(int i = 0; i < lines.size(); i++){
+            String key = "lineE";
+            String line = lines.get(i);
+            List<Document> trainData = new SearchDAO().dbGet(key,line);
+            for(int j = 0; j < trainData.size(); j++){
+                String x = trainData.get(j).getString(key);
+            }
 
-        for (int i =0; i < lines.size();i++){
-            lines.get(i);
 
         }
 
 
 
-
     }
-
-
 
 }
