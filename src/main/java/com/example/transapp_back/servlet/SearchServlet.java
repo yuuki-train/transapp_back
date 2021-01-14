@@ -9,9 +9,11 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.Serial;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.example.transapp_back.dao.SearchDAO;
 import com.example.transapp_back.logic.SearchLogic;
+import org.bson.Document;
 
 @WebServlet("/search")
 public class SearchServlet extends HttpServlet {
@@ -25,14 +27,17 @@ public class SearchServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         String departure = request.getParameter("departure");
         String destination = request.getParameter("destination");
-        String depHour = request.getParameter("depHour");
-        String depMinute = request.getParameter("depMinute");
+        String hour = request.getParameter("hour");
+        String minute = request.getParameter("minute");
+        String depOrArv = request.getParameter("depOrArv");
+        String priority = request.getParameter("priority");
+        String addFeeTrain = request.getParameter("addFeeTrain");
 
         //入力した駅名に対応する路線を洗い出す
         ArrayList<String> lines = new SearchLogic().LineCheck(departure, destination);
 
-        //DAOを呼び出す
-
+        //必要なデータを検索する
+        List<Document> searchResults = new SearchLogic().TrainSearch(lines, hour, minute, depOrArv, addFeeTrain);
 
         //セッションに登録する
         HttpSession session = request.getSession();

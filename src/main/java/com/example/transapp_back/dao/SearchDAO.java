@@ -11,7 +11,7 @@ import java.util.List;
 
 
 public class SearchDAO {
-    public List<Document> dbGet(String key, String param) {
+    public List<Document> dbGet(String key, String param, String depHour, String depMinute, boolean addFeeUse, boolean reverse) {
 
         ConnectionString connection = new ConnectionString(
                 "mongodb+srv://yuuki:yuukidb@cluster0.wdfqa.mongodb.net/diagram?retryWrites=true&w=majority"
@@ -25,7 +25,7 @@ public class SearchDAO {
         MongoDatabase database = client.getDatabase("diagram");
         MongoCollection<Document> trains = database.getCollection("trains");
 
-        List<Document> documents = trains.find(Filters.eq(key, param)).into(new ArrayList<Document>());
+        List<Document> documents = trains.find(Filters.and(Filters.eq(key, param),Filters.eq("addFee", addFeeUse))).into(new ArrayList<Document>());
 
         client.close();
 
