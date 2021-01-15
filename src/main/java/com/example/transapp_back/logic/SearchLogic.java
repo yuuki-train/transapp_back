@@ -9,11 +9,11 @@ import java.util.List;
 
 public class SearchLogic {
     //検索する路線を絞り込むメソッド
-    public ArrayList<String> LineCheck(String departure, String destination){
+    public List<String> LineCheck(String departure, String destination){
         //候補路線とその駅名の取得
         ArrayList<String> CandidateLines = new Lines().getCandidateLines();
        ArrayList<ArrayList<String>> Stations = new Lines().getStations();
-        ArrayList<String> lines = new ArrayList<String>();
+        List<String> lines = new ArrayList<>();
         int counter = 0;
 
         //候補路線から検索路線を絞り込む
@@ -42,9 +42,21 @@ public class SearchLogic {
     }
 
     //検索データを取得するメソッド
-    public List<Document> TrainSearch(
-            ArrayList<String> lines, String hour, String minute, String depOrArv, String addFeeTrain
-    ){
+     public List<Document> TrainSearch(
+            List<String> lines, String hour, String minute, String depOrArv, String addFeeTrain
+    ) {
+         List<Document> times = new SearchDAO().timeGet();
+
+         if (depOrArv.equals("depart")) {
+             List<List<Integer>> searchTime = new TimeLogic().departTime(lines, times, hour, minute);
+         }else{
+             List<List<Integer>> searchTime = new TimeLogic().arriveTime(lines, times, hour, minute);
+         }
+
+         List<Document> trains = new SearchDAO().trainGet(lines, searchTime);
+
+
+
         boolean addFeeUse = false;
         boolean reverse = false;
         // リクエストパラメータ値のチェック
@@ -61,9 +73,9 @@ public class SearchLogic {
         for(int i = 0; i < lines.size(); i++){
             String key = "lineE";
             String line = lines.get(i);
-            List<Document> trainData = new SearchDAO().dbGet(key, line, hour, minute, addFeeUse, reverse);
             for(int j = 0; j < trainData.size(); j++){
                 String x = trainData.get(j).getString(key);
+
             }
 
 
@@ -71,6 +83,6 @@ public class SearchLogic {
 
 
 
-    }
+    }*/
 
 }

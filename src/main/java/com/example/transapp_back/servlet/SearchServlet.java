@@ -34,7 +34,7 @@ public class SearchServlet extends HttpServlet {
         String addFeeTrain = request.getParameter("addFeeTrain");
 
         //入力した駅名に対応する路線を洗い出す
-        ArrayList<String> lines = new SearchLogic().LineCheck(departure, destination);
+        List<String> lines = new SearchLogic().LineCheck(departure, destination);
 
         //必要なデータを検索する
         List<Document> searchResults = new SearchLogic().TrainSearch(lines, hour, minute, depOrArv, addFeeTrain);
