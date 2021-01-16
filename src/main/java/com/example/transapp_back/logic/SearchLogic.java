@@ -9,7 +9,7 @@ import java.util.List;
 
 public class SearchLogic {
     //検索する路線を絞り込むメソッド
-    public List<String> LineCheck(String departure, String destination){
+    public List<String> checkLines(String departure, String destination){
         //候補路線とその駅名の取得
         ArrayList<String> CandidateLines = new Lines().getCandidateLines();
        ArrayList<ArrayList<String>> Stations = new Lines().getStations();
@@ -42,47 +42,17 @@ public class SearchLogic {
     }
 
     //検索データを取得するメソッド
-     public List<Document> TrainSearch(
-            List<String> lines, String hour, String minute, String depOrArv, String addFeeTrain
+     public List<Document> searchTrains(
+            List<String> lines, String hour, String minute, String depOrArv, int theNumberOfSearch
     ) {
-         List<Document> times = new SearchDAO().timeGet();
+         //時刻データを取得する。
+         List<Document> times = new SearchDAO().getTimes();
 
-         if (depOrArv.equals("depart")) {
-             List<List<Integer>> searchTime = new TimeLogic().departTime(lines, times, hour, minute);
-         }else{
-             List<List<Integer>> searchTime = new TimeLogic().arriveTime(lines, times, hour, minute);
-         }
+         //必要な列車を絞り込み、列車データidを取得する。
+         List<List<String>> searchTimes = new TimeLogic().selectTime(lines, times, hour, minute, depOrArv, theNumberOfSearch);
 
-         List<Document> trains = new SearchDAO().trainGet(lines, searchTime);
-
-
-
-        boolean addFeeUse = false;
-        boolean reverse = false;
-        // リクエストパラメータ値のチェック
-        if (addFeeTrain == "use"){
-            addFeeUse = true;
-        }
-
-        if (depOrArv =="arrive"){
-            reverse = true;
-        }
-
-
-
-        for(int i = 0; i < lines.size(); i++){
-            String key = "lineE";
-            String line = lines.get(i);
-            for(int j = 0; j < trainData.size(); j++){
-                String x = trainData.get(j).getString(key);
-
-            }
-
-
-        }
-
-
-
-    }*/
+         //列車データを取得する。
+         return new SearchDAO().getTrains(lines, searchTimes, theNumberOfSearch);
+    }
 
 }

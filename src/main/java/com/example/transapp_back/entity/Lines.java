@@ -7,20 +7,20 @@ public class Lines {
     private final ArrayList<ArrayList<String>> Stations;
 
     public Lines() {
-        CandidateLines = new ArrayList<String>();
+        CandidateLines = new ArrayList<>();
         CandidateLines.add("御堂筋線");
         CandidateLines.add("JR線");
 
-        ArrayList<String> Midosuji = new ArrayList<String>();
+        ArrayList<String> Midosuji = new ArrayList<>();
         Midosuji.add("天王寺");
         Midosuji.add("新大阪");
 
-        ArrayList<String> JR = new ArrayList<String>();
+        ArrayList<String> JR = new ArrayList<>();
         JR.add("天王寺");
         JR.add("大阪");
         JR.add("新大阪");
 
-        Stations = new ArrayList<ArrayList<String>>();
+        Stations = new ArrayList<>();
         Stations.add(Midosuji);
         Stations.add(JR);
     }

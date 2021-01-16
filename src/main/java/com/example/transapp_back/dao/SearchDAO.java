@@ -11,7 +11,7 @@ import java.util.List;
 
 
 public class SearchDAO {
-    public List<Document> timeGet() {
+    public List<Document> getTimes() {
 
 
         ConnectionString connection = new ConnectionString(
@@ -26,14 +26,15 @@ public class SearchDAO {
         MongoDatabase database = client.getDatabase("diagram");
         MongoCollection<Document> trainTimes = database.getCollection("trainTimes");
 
-        List<Document> times = trainTimes.find().into(new ArrayList<Document>());
+        List<Document> times = trainTimes.find().into(new ArrayList<>());
 
         client.close();
 
         return times;
     }
 
-    public List<Document> trainGet(List<String> lines, List<List<Integer>> searchTime) {
+
+    public List<Document> getTrains(List<String> lines, List<List<String>> searchTime, int theNumberOfSearch) {
 
 
         ConnectionString connection = new ConnectionString(
@@ -46,34 +47,21 @@ public class SearchDAO {
 
         MongoClient client = MongoClients.create(settings);
         MongoDatabase database = client.getDatabase("diagram");
-        MongoCollection<Document> trainTimes = database.getCollection("trains");
+        MongoCollection<Document> trains = database.getCollection("trains");
 
+        List<Document> trainLists = new ArrayList<>();
 
-
-
-
-
-
-        List<Document> times = trainTimes.find().into(new ArrayList<Document>());
+        for (int i = 0; i < lines.size(); i++){
+            for(int j = 0; j < theNumberOfSearch; j++){
+                String trainId = searchTime.get(i).get(j);
+                Document train = trains.find(Filters.eq("_id", trainId)).first();
+                trainLists.add(train);
+            }
+        }
 
         client.close();
 
-        return times;
+        return trainLists;
     }
-
-
-
-
-
-
-        /*List<Document> times = trainTimes.find(Filters.eq("_id", line)).into(new ArrayList<Document>());
-        int arrayLength = times.get(1).getInteger("arrayLength");
-        String depTime [] = new String[arrayLength];
-        String arvTime [] = new String[arrayLength];
-        depTime = times.get(2).;
-
-        List<Document> documents = trains.find(Filters.and(Filters.eq(key, line),Filters.eq("addFee", addFeeUse))).into(new ArrayList<Document>());
-        */
-
 
 }

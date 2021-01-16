@@ -6,71 +6,55 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TimeLogic {
-    public List<List<Integer>> departTime(
-            List<String> lines, List<Document> times, String hour, String minute
-    ){
+    public List<List<String>> selectTime(
+            List<String> lines, List<Document> times, String hour, String minute, String depOrArv, int theNumberOfSearch
+    ) {
         String strSearchTime = hour + minute;
         int searchTime = Integer.parseInt(strSearchTime);
 
-        List<List<Integer>> results = new ArrayList<>();
+        List<List<String>> results = new ArrayList<>();
 
-        for (int i = 0; i < lines.size(); i++){
+        for (int i = 0; i < lines.size(); i++) {
 
-            List<Integer> lineResults = new ArrayList<>();
+            List<String> lineResults = new ArrayList<>();
 
+            String shortName = (times.get(i).getString("short"));
             int total = (times.get(i).getInteger("total"));
 
-            int counter = 3;
+            if (depOrArv.equals("depart")) {
 
-            for(int j = 1; j <= total; j++){
-                if (counter <= 0){
-                    break;
+                for (int j = 1; j <= total; j++) {
+                    if (theNumberOfSearch <= 0) {
+                        break;
+                    }
+                    String keyNum = String.valueOf(j);
+                    String keyStr = "depTime" + keyNum;
+                    int time = times.get(i).getInteger(keyStr);
+                    if (searchTime <= time) {
+                        String strTime = String.valueOf(time);
+                        String id = shortName + strTime;
+                        lineResults.add(id);
+                        theNumberOfSearch--;
+                    }
                 }
-                String keyNum = String.valueOf(j);
-                String keyStr = "depTime" + keyNum;
-                int time = times.get(i).getInteger(keyStr);
-                if(searchTime <= time) {
-                    lineResults.add(time);
-                    counter--;
+            } else {
+                for (int j = total; j > 0; j--) {
+                    if (theNumberOfSearch <= 0) {
+                        break;
+                    }
+                    String keyNum = String.valueOf(j);
+                    String keyStr = "arvTime" + keyNum;
+                    int time = times.get(i).getInteger(keyStr);
+                    if (searchTime >= time) {
+                        String strTime = String.valueOf(time);
+                        String id = shortName + strTime;
+                        lineResults.add(id);
+                        theNumberOfSearch--;
+                    }
                 }
             }
             results.add(lineResults);
         }
-
-        return results;
-    }
-
-    public List<List<Integer>> arriveTime(
-            List<String> lines, List<Document> times, String hour, String minute
-    ){
-        String strSearchTime = hour + minute;
-        int searchTime = Integer.parseInt(strSearchTime);
-
-        List<List<Integer>> results = new ArrayList<>();
-
-        for (int i = 0; i < lines.size(); i++){
-
-            List<Integer> lineResults = new ArrayList<>();
-
-            int total = (times.get(i).getInteger("total"));
-
-            int counter = 3;
-
-            for(int j = total; j <= 0; j--){
-                if (counter <= 0){
-                    break;
-                }
-                String keyNum = String.valueOf(j);
-                String keyStr = "arvTime" + keyNum;
-                int time = times.get(i).getInteger(keyStr);
-                if(searchTime >= time) {
-                    lineResults.add(time);
-                    counter--;
-                }
-            }
-            results.add(lineResults);
-        }
-
         return results;
     }
 }

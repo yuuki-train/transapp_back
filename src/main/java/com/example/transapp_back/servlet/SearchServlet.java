@@ -8,10 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.Serial;
-import java.util.ArrayList;
 import java.util.List;
-
-import com.example.transapp_back.dao.SearchDAO;
 import com.example.transapp_back.logic.SearchLogic;
 import org.bson.Document;
 
@@ -33,16 +30,25 @@ public class SearchServlet extends HttpServlet {
         String priority = request.getParameter("priority");
         String addFeeTrain = request.getParameter("addFeeTrain");
 
+        int theNumberOfSearch = 3;
+
         //入力した駅名に対応する路線を洗い出す
-        List<String> lines = new SearchLogic().LineCheck(departure, destination);
+        List<String> lines = new SearchLogic().checkLines(departure, destination);
 
         //必要なデータを検索する
-        List<Document> searchResults = new SearchLogic().TrainSearch(lines, hour, minute, depOrArv, addFeeTrain);
+        List<Document> searchResults = new SearchLogic().searchTrains(
+                lines, hour, minute, depOrArv, theNumberOfSearch
+        );
+
+        //表示するデータを選択する
+
+
 
         //セッションに登録する
         HttpSession session = request.getSession();
         session.setAttribute("Lines", lines);
 
-
+        //次の画面にフォワードする。
+        request.getRequestDispatcher("").forward(request, response);
     }
 }
