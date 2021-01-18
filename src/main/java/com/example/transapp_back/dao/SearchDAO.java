@@ -1,9 +1,11 @@
 package com.example.transapp_back.dao;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.*;
-import com.mongodb.client.model.Filters;
+
 import org.bson.Document;
 
 import java.util.ArrayList;
@@ -11,7 +13,7 @@ import java.util.List;
 
 
 public class SearchDAO {
-    public List<Document> getTimes() {
+    public List<String> getTimes(List<String> lines) throws JsonProcessingException {
 
 
         ConnectionString connection = new ConnectionString(
@@ -26,7 +28,18 @@ public class SearchDAO {
         MongoDatabase database = client.getDatabase("diagram");
         MongoCollection<Document> trainTimes = database.getCollection("trainTimes");
 
-        List<Document> times = trainTimes.find().into(new ArrayList<>());
+        List<String> times = new ArrayList<>();
+
+        for (String line : lines) {
+            String key = "_id";
+            Document query = new Document(key, line);
+            FindIterable<Document> iterator = trainTimes.find(query);
+            MongoCursor<Document> cursor = iterator.iterator();
+            Object object = cursor.next();
+            ObjectMapper mapper = new ObjectMapper();
+            String json = mapper.writeValueAsString(object);
+            times.add(json);
+        }
 
         client.close();
 
@@ -34,7 +47,8 @@ public class SearchDAO {
     }
 
 
-    public List<Document> getTrains(List<String> lines, List<List<String>> searchTime, int theNumberOfSearch) {
+    public List<String> getTrains(List<String> lines, List<List<String>> searchTime, int theNumberOfSearch)
+            throws JsonProcessingException {
 
 
         ConnectionString connection = new ConnectionString(
@@ -49,13 +63,19 @@ public class SearchDAO {
         MongoDatabase database = client.getDatabase("diagram");
         MongoCollection<Document> trains = database.getCollection("trains");
 
-        List<Document> trainLists = new ArrayList<>();
+        List<String> trainLists = new ArrayList<>();
 
         for (int i = 0; i < lines.size(); i++){
             for(int j = 0; j < theNumberOfSearch; j++){
                 String trainId = searchTime.get(i).get(j);
-                Document train = trains.find(Filters.eq("_id", trainId)).first();
-                trainLists.add(train);
+                String key = "_id";
+                Document query = new Document(key, trainId);
+                FindIterable<Document> iterator = trains.find(query);
+                MongoCursor<Document> cursor = iterator.iterator();
+                Object object = cursor.next();
+                ObjectMapper mapper = new ObjectMapper();
+                String json = mapper.writeValueAsString(object);
+                trainLists.add(json);
             }
         }
 

@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.Serial;
 import java.util.List;
 import com.example.transapp_back.logic.SearchLogic;
-import org.bson.Document;
 
 @WebServlet("/search")
 public class SearchServlet extends HttpServlet {
@@ -36,12 +35,12 @@ public class SearchServlet extends HttpServlet {
         List<String> lines = new SearchLogic().checkLines(departure, destination);
 
         //必要なデータを検索する
-        List<Document> searchResults = new SearchLogic().searchTrains(
+        List<String> trains = new SearchLogic().searchTrains(
                 lines, hour, minute, depOrArv, theNumberOfSearch
         );
 
         //表示するデータを選択する
-
+        List<String> results = new SearchLogic().selectTrains(trains, priority, addFeeTrain);
 
 
         //セッションに登録する
@@ -50,5 +49,6 @@ public class SearchServlet extends HttpServlet {
 
         //次の画面にフォワードする。
         request.getRequestDispatcher("").forward(request, response);
+
     }
 }

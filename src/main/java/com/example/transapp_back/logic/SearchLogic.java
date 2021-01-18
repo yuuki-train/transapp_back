@@ -2,7 +2,7 @@ package com.example.transapp_back.logic;
 
 import com.example.transapp_back.dao.SearchDAO;
 import com.example.transapp_back.entity.Lines;
-import org.bson.Document;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,11 +42,11 @@ public class SearchLogic {
     }
 
     //検索データを取得するメソッド
-     public List<Document> searchTrains(
+    public List<String> searchTrains(
             List<String> lines, String hour, String minute, String depOrArv, int theNumberOfSearch
-    ) {
+    ) throws JsonProcessingException {
          //時刻データを取得する。
-         List<Document> times = new SearchDAO().getTimes();
+         List<String> times = new SearchDAO().getTimes(lines);
 
          //必要な列車を絞り込み、列車データidを取得する。
          List<List<String>> searchTimes = new TimeLogic().selectTime(lines, times, hour, minute, depOrArv, theNumberOfSearch);
@@ -54,5 +54,22 @@ public class SearchLogic {
          //列車データを取得する。
          return new SearchDAO().getTrains(lines, searchTimes, theNumberOfSearch);
     }
+
+    //検索データを整理し選択するメソッド
+    public List<String> selectTrains(List<String> trains, String priority, String addFeeTrain){
+        String faster = "速さ優先";
+        String cheaper = "安さ優先";
+        String changeTrain = "乗換の少なさ優先";
+
+        List<String> results = new ArrayList<>();
+
+
+
+
+
+        return results;
+    }
+
+
 
 }
