@@ -27,7 +27,7 @@ public class SearchServlet extends HttpServlet {
         String minute = request.getParameter("minute");
         String depOrArv = request.getParameter("depOrArv");
         String priority = request.getParameter("priority");
-        String addFeeTrain = request.getParameter("addFeeTrain");
+        String[] addFeeTrain = request.getParameterValues("addFeeTrain");
 
         int theNumberOfSearch = 3;
 
@@ -40,7 +40,7 @@ public class SearchServlet extends HttpServlet {
         );
 
         //表示するデータを選択する
-        List<String> results = new SearchLogic().selectTrains(trains, priority, addFeeTrain);
+        List<String> results = new SearchLogic().selectTrains(trains, priority, addFeeTrain, theNumberOfSearch);
 
 
         //セッションに登録する

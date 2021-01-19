@@ -56,13 +56,20 @@ public class SearchLogic {
     }
 
     //検索データを整理し選択するメソッド
-    public List<String> selectTrains(List<String> trains, String priority, String addFeeTrain){
+    public List<String> selectTrains(List<String> trains, String priority, String[] addFeeTrain, int theNumberOfSearch){
         String faster = "速さ優先";
         String cheaper = "安さ優先";
         String changeTrain = "乗換の少なさ優先";
+        boolean useAddFeeTrain = false;
 
-        List<String> results = new ArrayList<>();
+        if(addFeeTrain[0] == "use"){
+            useAddFeeTrain = true;
+        }
 
+
+        if (priority == faster){
+            List<String> results = new SortLogic().sortFaster(trains, useAddFeeTrain,theNumberOfSearch );
+        }
 
 
 
