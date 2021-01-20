@@ -15,7 +15,7 @@ import java.util.List;
 
 public class SearchDAO {
     public List<Document> getTrains(
-            List<String> lines, String hour, String minute, boolean addFeeTrain, int theNumberOfSearch
+            List<String> lines, String hour, String minute, String depOrArv, boolean addFeeTrain, int theNumberOfSearch
     ){
 
         ConnectionString connection = new ConnectionString(
@@ -39,8 +39,13 @@ public class SearchDAO {
         Document queryDetail;
         Document query;
 
-            queryDetail = new Document("$gte",searchTime);
-            query = new Document("depTime", queryDetail);
+            if(depOrArv.equals("depart")) {
+                queryDetail = new Document("$gte", searchTime);
+                query = new Document("depTime", queryDetail);
+            }else{
+                queryDetail = new Document("$lte", searchTime);
+                query = new Document("arvTime", queryDetail);
+            }
 
 
            for (String line : lines) {

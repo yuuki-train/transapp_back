@@ -39,20 +39,14 @@ public class SearchServlet extends HttpServlet {
 
         //必要なデータを検索する
         List<Document> trains = new SearchLogic().searchTrains(
-                lines, hour, minute, addFeeTrain, theNumberOfSearch
+                lines, hour, minute, depOrArv, addFeeTrain, theNumberOfSearch
         );
 
         //Trainsクラスに格納する
         List<Trains> trainsList = new SearchLogic().setTrainsClass(trains);
 
-        //表示するデータを選択する
-        List<Trains> results = new SearchLogic().selectTrains(trainsList, depOrArv, priority);
-
-
-
-        //ObjectMapper mapper = new ObjectMapper();
-        //String json = mapper.writeValueAsString(object);
-
+        //表示するデータを並び変えて選択する
+        List<String> sortList = new SearchLogic().sortTrains(trainsList, depOrArv, priority, theNumberOfSearch);
 
         //セッションに登録する
         HttpSession session = request.getSession();

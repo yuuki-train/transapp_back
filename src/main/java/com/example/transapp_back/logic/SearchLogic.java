@@ -3,6 +3,8 @@ package com.example.transapp_back.logic;
 import com.example.transapp_back.dao.SearchDAO;
 import com.example.transapp_back.entity.Lines;
 import com.example.transapp_back.entity.Trains;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.bson.Document;
 
 import java.util.ArrayList;
@@ -46,7 +48,7 @@ public class SearchLogic {
 
     //検索データを取得するメソッド
     public List<Document> searchTrains(
-            List<String> lines, String hour, String minute, String[] addFeeTrain, int theNumberOfSearch
+            List<String> lines, String hour, String minute, String depOrArv, String[] addFeeTrain, int theNumberOfSearch
     ){
 
         boolean useAddFeeTrain = false;
@@ -55,7 +57,7 @@ public class SearchLogic {
             useAddFeeTrain = true;
         }
         //列車データを取得する。
-        return new SearchDAO().getTrains(lines, hour, minute, useAddFeeTrain, theNumberOfSearch);
+        return new SearchDAO().getTrains(lines, hour, minute, depOrArv, useAddFeeTrain, theNumberOfSearch);
     }
 
     //取得したデータをTrainsクラスに格納するメソッド
@@ -103,7 +105,7 @@ public class SearchLogic {
 
 
     //検索データを整理し選択するメソッド
-    public List<Trains> selectTrains(List<Trains> trains, String depOrArv ,String priority){
+    public List<String> sortTrains(List<Trains> trains, String depOrArv ,String priority, int theNumberOfSearch) throws JsonProcessingException {
 
 
         List<Trains> timeSort = trains.stream().sorted(new Comparator<Trains>() {
@@ -133,8 +135,16 @@ public class SearchLogic {
             }
         }).collect(Collectors.toList());
 
+        List<String> results = new ArrayList<>();
 
-        return priorSort;
+        for(int i= 0; i < theNumberOfSearch; i++){
+           Trains train = priorSort.get(0);
+           ObjectMapper mapper = new ObjectMapper();
+           String json = mapper.writeValueAsString(train);
+           results.add(json);
+        }
+
+        return results;
     }
 
 
