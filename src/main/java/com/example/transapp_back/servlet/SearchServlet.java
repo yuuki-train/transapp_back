@@ -9,7 +9,10 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.Serial;
 import java.util.List;
+
+import com.example.transapp_back.entity.Trains;
 import com.example.transapp_back.logic.SearchLogic;
+import org.bson.Document;
 
 @WebServlet("/search")
 public class SearchServlet extends HttpServlet {
@@ -35,12 +38,20 @@ public class SearchServlet extends HttpServlet {
         List<String> lines = new SearchLogic().checkLines(departure, destination);
 
         //必要なデータを検索する
-        List<String> trains = new SearchLogic().searchTrains(
-                lines, hour, minute, depOrArv, theNumberOfSearch
+        List<Document> trains = new SearchLogic().searchTrains(
+                lines, hour, minute, addFeeTrain, theNumberOfSearch
         );
 
+        //Trainsクラスに格納する
+        List<Trains> trainsList = new SearchLogic().setTrainsClass(trains);
+
         //表示するデータを選択する
-        List<String> results = new SearchLogic().selectTrains(trains, priority, addFeeTrain, theNumberOfSearch);
+        List<Trains> results = new SearchLogic().selectTrains(trainsList, depOrArv, priority);
+
+
+
+        //ObjectMapper mapper = new ObjectMapper();
+        //String json = mapper.writeValueAsString(object);
 
 
         //セッションに登録する
