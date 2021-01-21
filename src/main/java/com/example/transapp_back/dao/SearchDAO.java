@@ -36,34 +36,45 @@ public class SearchDAO {
         String strSearchTime = hour + minute;
         int searchTime = Integer.parseInt(strSearchTime);
 
-        Document queryDetail;
-        Document query;
+        String value1;
+        String value2 = "lineJ";
+        String value3 = "addFee";
+        Document sort = new Document("arvTime",-1);
+
+        for (String line : lines) {
+
+            FindIterable<Document> iterator;
 
             if(depOrArv.equals("depart")) {
-                queryDetail = new Document("$gte", searchTime);
-                query = new Document("depTime", queryDetail);
+                value1 = "depTime";
+
+                if (addFeeTrain) {
+                    iterator = trains.find(Filters.and(Filters.gte(value1, searchTime),Filters.eq(value2, line)
+                    )).limit(theNumberOfSearch);
+                } else {
+                    iterator = trains.find(Filters.and(Filters.and(
+                            Filters.gte(value1, searchTime), Filters.eq(value2, line)), Filters.eq(value3, addFeeTrain)
+                    )).limit(theNumberOfSearch);
+                }
+
             }else{
-                queryDetail = new Document("$lte", searchTime);
-                query = new Document("arvTime", queryDetail);
+                value1 = "arvTime";
+
+                if (addFeeTrain) {
+                    iterator = trains.find().filter(Filters.and(
+                            Filters.lte(value1, searchTime), Filters.eq(value2, line)
+                    )).limit(theNumberOfSearch).sort(sort);
+                } else {
+                    iterator = trains.find(Filters.and(Filters.and(
+                            Filters.lte(value1, searchTime), Filters.eq(value2, line)),Filters.eq(value3, addFeeTrain)
+                    )).limit(theNumberOfSearch).sort(sort);
+                }
             }
 
-
-           for (String line : lines) {
-               FindIterable<Document> iterator;
-
-               if (addFeeTrain) {
-                   iterator = trains.find(query).limit(theNumberOfSearch)
-                           .filter(Filters.eq("lineE", line));
-               } else {
-                   iterator = trains.find(query).limit(theNumberOfSearch)
-                           .filter(Filters.and
-                                   (Filters.eq("lineE", line), Filters.eq("addFee", false)));
-               }
-
-               for (Document doc : iterator) {
-                   trainLists.add(doc);
-               }
-           }
+            for (Document doc : iterator) {
+                trainLists.add(doc);
+            }
+        }
         client.close();
 
         return trainLists;

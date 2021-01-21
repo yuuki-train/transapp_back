@@ -3,12 +3,9 @@ package com.example.transapp_back.logic;
 import com.example.transapp_back.dao.SearchDAO;
 import com.example.transapp_back.entity.Lines;
 import com.example.transapp_back.entity.Trains;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.bson.Document;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -103,50 +100,70 @@ public class SearchLogic {
         return trainsList;
     }
 
-
     //検索データを整理し選択するメソッド
-    public List<String> sortTrains(List<Trains> trains, String depOrArv ,String priority, int theNumberOfSearch) throws JsonProcessingException {
+    public List<Trains> sortTrains(List<Trains> trains, String depOrArv ,String[] priority, int theNumberOfSearch) {
 
+        String faster = "faster";
+        String cheaper = "cheaper";
+        List<Trains> timeList;
+        List<Trains> sortList;
 
-        List<Trains> timeSort = trains.stream().sorted(new Comparator<Trains>() {
-            @Override
-            public int compare(Trains o1, Trains o2) {
-                if(depOrArv.equals("depart")){
-                    return o1.getArvTime() <= o2.getArvTime() ? -1 : 1;
-                }else{
-                    return o1.getDepTime() <= o2.getDepTime() ? 1 : -1;
+        if (priority[0].equals(faster)) {
+            sortList = trains.stream().sorted((o1, o2) -> {
+                if (o1.getArvTime() != o2.getArvTime()) {
+                    if (depOrArv.equals("depart")) {
+                        return o1.getArvTime() < o2.getArvTime() ? -1 : 1;
+                    } else {
+                        return o1.getDepTime() < o2.getDepTime() ? 1 : -1;
+                    }
+                } else {
+                    if (o1.getTotalMinutes() != o2.getTotalMinutes()) {
+                        return o1.getTotalMinutes() <= o2.getTotalMinutes() ? -1 : 1;
+                    } else {
+                        return 0;
+                    }
                 }
-            }
-        }).collect(Collectors.toList());
+            }).collect(Collectors.toList());
 
-        String faster = "速さ優先";
-        String cheaper = "安さ優先";
-
-        List<Trains> priorSort = timeSort.stream().sorted(new Comparator<Trains>() {
-            @Override
-            public int compare(Trains o1, Trains o2) {
-                if(priority.equals(faster)){
-                    return o1.getTotalMinutes() < o2.getTotalMinutes() ? -1 : 1;
-                }else if(priority.equals(cheaper)){
-                    return (o1.getFair() + o1.getFee()) < (o2.getFair() + o2.getFee()) ? -1 : 1;
-                }else{
-                    return o1.getChangeTrain() < o2.getChangeTrain() ? -1 : 1;
+        } else {
+            timeList = trains.stream().sorted((o1, o2) -> {
+                if (o1.getArvTime() != o2.getArvTime()) {
+                    if (depOrArv.equals("depart")) {
+                        return o1.getArvTime() < o2.getArvTime() ? -1 : 1;
+                    } else {
+                        return o1.getDepTime() < o2.getDepTime() ? 1 : -1;
+                    }
+                } else {
+                        return 0;
                 }
-            }
-        }).collect(Collectors.toList());
+            }).collect(Collectors.toList());
 
-        List<String> results = new ArrayList<>();
-
-        for(int i= 0; i < theNumberOfSearch; i++){
-           Trains train = priorSort.get(0);
-           ObjectMapper mapper = new ObjectMapper();
-           String json = mapper.writeValueAsString(train);
-           results.add(json);
+            sortList = timeList.stream().sorted((p1, p2) -> {
+                if(priority[0].equals(cheaper)){
+                    int total1 = p1.getFair() + p1.getFee();
+                    int total2 = p2.getFair() + p2.getFee();
+                    if (total1 != total2) {
+                        return total1 < total2 ? -1 : 1;
+                    } else {
+                        return 0;
+                    }
+                }else{
+                    if (p1.getChangeTrain() != p2.getChangeTrain()) {
+                        return p1.getChangeTrain() < p2.getChangeTrain() ? -1 : 1;
+                    } else {
+                        return 0;
+                    }
+                }
+            }).collect(Collectors.toList());
         }
 
+        List<Trains> results = new ArrayList<>();
+
+        for (int i = 0; i < theNumberOfSearch; i++) {
+            Trains train = sortList.get(i);
+            results.add(train);
+        }
         return results;
     }
-
-
 
 }

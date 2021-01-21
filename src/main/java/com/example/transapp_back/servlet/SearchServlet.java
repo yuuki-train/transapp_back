@@ -29,7 +29,7 @@ public class SearchServlet extends HttpServlet {
         String hour = request.getParameter("hour");
         String minute = request.getParameter("minute");
         String depOrArv = request.getParameter("depOrArv");
-        String priority = request.getParameter("priority");
+        String[] priority = request.getParameterValues("priority");
         String[] addFeeTrain = request.getParameterValues("addFeeTrain");
 
         int theNumberOfSearch = 3;
@@ -46,14 +46,14 @@ public class SearchServlet extends HttpServlet {
         List<Trains> trainsList = new SearchLogic().setTrainsClass(trains);
 
         //表示するデータを並び変えて選択する
-        List<String> sortList = new SearchLogic().sortTrains(trainsList, depOrArv, priority, theNumberOfSearch);
+        List<Trains> sortList = new SearchLogic().sortTrains(trainsList, depOrArv, priority, theNumberOfSearch);
 
         //セッションに登録する
         HttpSession session = request.getSession();
-        session.setAttribute("Lines", lines);
+        session.setAttribute("Trains", sortList);
 
         //次の画面にフォワードする。
-        request.getRequestDispatcher("").forward(request, response);
+        request.getRequestDispatcher("/resultsController.java").forward(request, response);
 
     }
 }
