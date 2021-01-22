@@ -1,4 +1,4 @@
-package com.example.transapp_back.servlet;
+package com.example.transapp_back.controller;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -48,12 +48,11 @@ public class SearchServlet extends HttpServlet {
         //表示するデータを並び変えて選択する
         List<Trains> sortList = new SearchLogic().sortTrains(trainsList, depOrArv, priority, theNumberOfSearch);
 
-        //セッションに登録する
-        HttpSession session = request.getSession();
-        session.setAttribute("Trains", sortList);
+        //フロントエンドに送る準備を整える
+        String sendList = new SearchLogic().toJavaScript(sortList);
 
-        //次の画面にフォワードする。
-        request.getRequestDispatcher("/resultsController.java").forward(request, response);
+        //フロントエンドに送信する
+        String sendData = new SearchController().sendData(sendList);
 
     }
 }

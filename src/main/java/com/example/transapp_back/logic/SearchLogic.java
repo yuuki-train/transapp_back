@@ -3,6 +3,8 @@ package com.example.transapp_back.logic;
 import com.example.transapp_back.dao.SearchDAO;
 import com.example.transapp_back.entity.Lines;
 import com.example.transapp_back.entity.Trains;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.bson.Document;
 
 import java.util.ArrayList;
@@ -165,5 +167,28 @@ public class SearchLogic {
         }
         return results;
     }
+
+    public String toJavaScript(List<Trains> sortList) throws JsonProcessingException {
+        //データをJSONに変換
+        List <String> jsonList = new ArrayList<>();
+        ObjectMapper mapper = new ObjectMapper();
+        for (Trains train : sortList) {
+            String json = mapper.writeValueAsString(train);
+            jsonList.add(json);
+        }
+
+        StringBuilder buffer = new StringBuilder();
+        buffer.append("[");
+        for(int j = 0 ; j < jsonList.size(); j++){
+            buffer.append("\"").append(jsonList.get(j)).append("\"");
+            if(j+1 < jsonList.size()){
+                buffer.append(",");
+            }
+        }
+        buffer.append("]");
+        return buffer.toString();
+
+    }
+
 
 }
