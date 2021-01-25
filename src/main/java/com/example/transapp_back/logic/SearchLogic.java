@@ -81,6 +81,9 @@ public class SearchLogic {
             int changeTrain = train.getInteger("changeTrain");
             Trains elements = new Trains();
 
+            int totalCharge = fair + fee;
+
+
             elements.setId(id);
             elements.setLine(line);
             elements.setDeparture(departure);
@@ -93,6 +96,7 @@ public class SearchLogic {
             elements.setArvTime(arvTime);
             elements.setTotalMinutes(totalMinutes);
             elements.setTrainType(trainType);
+            elements.setTotalCharge(totalCharge);
             elements.setFair(fair);
             elements.setFee(fee);
             elements.setChangeTrain(changeTrain);
@@ -128,6 +132,7 @@ public class SearchLogic {
             }).collect(Collectors.toList());
 
         } else {
+            //TODO:ロジックの必要性を見直す。
             timeList = trains.stream().sorted((o1, o2) -> {
                 if (o1.getArvTime() != o2.getArvTime()) {
                     if (depOrArv.equals("depart")) {

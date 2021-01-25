@@ -26,6 +26,8 @@ public class Trains {
 
     private String trainType;
 
+    private int totalCharge;
+
     private int fair;
 
     private int fee;
@@ -82,6 +84,10 @@ public class Trains {
 
     public String getTrainType() {
         return trainType;
+    }
+
+    public int getTotalCharge() {
+        return totalCharge;
     }
 
     public int getFair() {
@@ -144,6 +150,10 @@ public class Trains {
 
     public void setTrainType(String trainType) {
         this.trainType = trainType;
+    }
+
+    public void setTotalCharge(int totalCharge) {
+        this.totalCharge = totalCharge;
     }
 
     public void setFair(int fair) {
