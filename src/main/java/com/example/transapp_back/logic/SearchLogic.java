@@ -13,15 +13,15 @@ import java.util.stream.Collectors;
 
 public class SearchLogic {
     //検索する路線を絞り込むメソッド
-    public List<String> checkLines(String departure, String destination){
+    public List<String> checkLines(String departure, String destination) {
         //候補路線とその駅名の取得
         ArrayList<String> CandidateLines = new Lines().getCandidateLines();
-       ArrayList<ArrayList<String>> Stations = new Lines().getStations();
+        ArrayList<ArrayList<String>> Stations = new Lines().getStations();
         List<String> lines = new ArrayList<>();
         int counter = 0;
 
         //候補路線から検索路線を絞り込む
-        for(int i = 0; i<CandidateLines.size(); i++){
+        for (int i = 0; i < CandidateLines.size(); i++) {
             ArrayList<String> station = Stations.get(i);
             boolean depStation = false;
             boolean arvStation = false;
@@ -36,8 +36,8 @@ public class SearchLogic {
                 }
             }
             //出発駅と到着駅の両方がtrueなら、検索路線に登録。
-            if(depStation && arvStation){
-                lines.add(counter,CandidateLines.get(i));
+            if (depStation && arvStation) {
+                lines.add(counter, CandidateLines.get(i));
                 counter++;
             }
 
@@ -48,11 +48,11 @@ public class SearchLogic {
     //検索データを取得するメソッド
     public List<Document> searchTrains(
             List<String> lines, String hour, String minute, String depOrArv, String[] addFeeTrain, int theNumberOfSearch
-    ){
+    ) {
 
         boolean useAddFeeTrain = false;
 
-        if(addFeeTrain[0].equals("use")){
+        if (addFeeTrain[0].equals("use")) {
             useAddFeeTrain = true;
         }
         //列車データを取得する。
@@ -60,7 +60,7 @@ public class SearchLogic {
     }
 
     //取得したデータをTrainsクラスに格納するメソッド
-    public List<Trains> setTrainsClass(List<Document> trains){
+    public List<Trains> setTrainsClass(List<Document> trains) {
         List<Trains> trainsList = new ArrayList<>();
 
         for (Document train : trains) {
@@ -107,7 +107,7 @@ public class SearchLogic {
     }
 
     //検索データを整理し選択するメソッド
-    public List<Trains> sortTrains(List<Trains> trains, String depOrArv ,String[] priority, int theNumberOfSearch) {
+    public List<Trains> sortTrains(List<Trains> trains, String depOrArv, String[] priority, int theNumberOfSearch) {
 
         String faster = "faster";
         String cheaper = "cheaper";
@@ -141,12 +141,12 @@ public class SearchLogic {
                         return o1.getDepTime() < o2.getDepTime() ? 1 : -1;
                     }
                 } else {
-                        return 0;
+                    return 0;
                 }
             }).collect(Collectors.toList());
 
             sortList = timeList.stream().sorted((p1, p2) -> {
-                if(priority[0].equals(cheaper)){
+                if (priority[0].equals(cheaper)) {
                     int total1 = p1.getFair() + p1.getFee();
                     int total2 = p2.getFair() + p2.getFee();
                     if (total1 != total2) {
@@ -154,7 +154,7 @@ public class SearchLogic {
                     } else {
                         return 0;
                     }
-                }else{
+                } else {
                     if (p1.getChangeTrain() != p2.getChangeTrain()) {
                         return p1.getChangeTrain() < p2.getChangeTrain() ? -1 : 1;
                     } else {
@@ -172,28 +172,4 @@ public class SearchLogic {
         }
         return results;
     }
-
-    public String toJavaScript(List<Trains> sortList) throws JsonProcessingException {
-        //データをJSONに変換
-        List <String> jsonList = new ArrayList<>();
-        ObjectMapper mapper = new ObjectMapper();
-        for (Trains train : sortList) {
-            String json = mapper.writeValueAsString(train);
-            jsonList.add(json);
-        }
-
-        StringBuilder buffer = new StringBuilder();
-        buffer.append("[");
-        for(int j = 0 ; j < jsonList.size(); j++){
-            buffer.append("\"").append(jsonList.get(j)).append("\"");
-            if(j+1 < jsonList.size()){
-                buffer.append(",");
-            }
-        }
-        buffer.append("]");
-        return buffer.toString();
-
-    }
-
-
 }

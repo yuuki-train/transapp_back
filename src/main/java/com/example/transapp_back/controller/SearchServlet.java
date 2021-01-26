@@ -12,6 +12,7 @@ import java.util.List;
 
 import com.example.transapp_back.entity.Trains;
 import com.example.transapp_back.logic.SearchLogic;
+import com.example.transapp_back.logic.SendLogic;
 import org.bson.Document;
 
 @WebServlet("/search")
@@ -48,11 +49,8 @@ public class SearchServlet extends HttpServlet {
         //表示するデータを並び変えて選択する
         List<Trains> sortList = new SearchLogic().sortTrains(trainsList, depOrArv, priority, theNumberOfSearch);
 
-        //フロントエンドに送る準備を整える
-        String sendList = new SearchLogic().toJavaScript(sortList);
-
-        //フロントエンドに送信する
-        String sendData = new SearchController().sendData(sendList);
+        //フロントエンドに送る
+        String sendList = new SendLogic().toJavaScript(sortList);
 
     }
 }

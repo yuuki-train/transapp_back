@@ -1,9 +1,9 @@
 package com.example.transapp_back;
 
-import com.example.transapp_back.controller.SearchController;
 import com.example.transapp_back.dao.SearchDAO;
 import com.example.transapp_back.entity.Trains;
 import com.example.transapp_back.logic.SearchLogic;
+import com.example.transapp_back.logic.SendLogic;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.bson.Document;
 
@@ -29,9 +29,9 @@ public class TransappBackApplication {
 
 		List<Trains> testSortList = new SearchLogic().sortTrains(testTrainsList, depOrArv, priority, theNumberOfSearch);
 
-		String sendList = new SearchLogic().toJavaScript(testSortList);
+		String sendList = new SendLogic().toJavaScript(testSortList);
 
-		System.out.println(sendList);
+
 
 	}
 }
