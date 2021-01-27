@@ -45,20 +45,6 @@ public class SearchLogic {
         return lines;
     }
 
-    //検索データを取得するメソッド
-    public List<Document> searchTrains(
-            List<String> lines, String hour, String minute, String depOrArv, String[] addFeeTrain, int theNumberOfSearch
-    ) {
-
-        boolean useAddFeeTrain = false;
-
-        if (addFeeTrain[0].equals("use")) {
-            useAddFeeTrain = true;
-        }
-        //列車データを取得する。
-        return new SearchDAO().getTrains(lines, hour, minute, depOrArv, useAddFeeTrain, theNumberOfSearch);
-    }
-
     //取得したデータをTrainsクラスに格納するメソッド
     public List<Trains> setTrainsClass(List<Document> trains) {
         List<Trains> trainsList = new ArrayList<>();
@@ -107,69 +93,64 @@ public class SearchLogic {
     }
 
     //検索データを整理し選択するメソッド
-    public List<Trains> sortTrains(List<Trains> trains, String depOrArv, String[] priority, int theNumberOfSearch) {
+    public List<Trains> sortTrains(List<Trains> trains, String depOrArv, String priority, int theNumberOfSearch) {
 
         String faster = "faster";
         String cheaper = "cheaper";
-        List<Trains> timeList;
         List<Trains> sortList;
 
-        if (priority[0].equals(faster)) {
-            sortList = trains.stream().sorted((o1, o2) -> {
-                if (o1.getArvTime() != o2.getArvTime()) {
-                    if (depOrArv.equals("depart")) {
-                        return o1.getArvTime() < o2.getArvTime() ? -1 : 1;
-                    } else {
-                        return o1.getDepTime() < o2.getDepTime() ? 1 : -1;
-                    }
-                } else {
-                    if (o1.getTotalMinutes() != o2.getTotalMinutes()) {
-                        return o1.getTotalMinutes() <= o2.getTotalMinutes() ? -1 : 1;
-                    } else {
-                        return 0;
-                    }
-                }
-            }).collect(Collectors.toList());
+        sortList = trains.stream().sorted((train1, train2) -> {
+            if (priority.equals(faster)) {
 
-        } else {
-            //TODO:ロジックの必要性を見直す。
-            timeList = trains.stream().sorted((o1, o2) -> {
-                if (o1.getArvTime() != o2.getArvTime()) {
-                    if (depOrArv.equals("depart")) {
-                        return o1.getArvTime() < o2.getArvTime() ? -1 : 1;
-                    } else {
-                        return o1.getDepTime() < o2.getDepTime() ? 1 : -1;
-                    }
-                } else {
-                    return 0;
+                if (train1.getTotalMinutes() != train2.getTotalMinutes()) {
+                    return train1.getTotalMinutes() < train2.getTotalMinutes() ? -1 : 1;
+                }else {
+                    return new SearchLogic().timeSort(train1, train2, depOrArv);
                 }
-            }).collect(Collectors.toList());
 
-            sortList = timeList.stream().sorted((p1, p2) -> {
-                if (priority[0].equals(cheaper)) {
-                    int total1 = p1.getFair() + p1.getFee();
-                    int total2 = p2.getFair() + p2.getFee();
-                    if (total1 != total2) {
-                        return total1 < total2 ? -1 : 1;
-                    } else {
-                        return 0;
-                    }
+            }else if(priority.equals(cheaper)) {
+                if (train1.getTotalCharge() != train2.getTotalCharge()) {
+                    return train1.getTotalCharge() < train2.getTotalCharge() ? -1 : 1;
                 } else {
-                    if (p1.getChangeTrain() != p2.getChangeTrain()) {
-                        return p1.getChangeTrain() < p2.getChangeTrain() ? -1 : 1;
-                    } else {
-                        return 0;
-                    }
+                    return new SearchLogic().timeSort(train1, train2, depOrArv);
                 }
-            }).collect(Collectors.toList());
-        }
+            }else{
+                if (train1.getChangeTrain() != train2.getChangeTrain()) {
+                    return train1.getChangeTrain() < train2.getChangeTrain() ? -1 : 1;
+                } else {
+                    return new SearchLogic().timeSort(train1, train2, depOrArv);
+                }
+            }
+        }).collect(Collectors.toList());
 
         List<Trains> results = new ArrayList<>();
 
         for (int i = 0; i < theNumberOfSearch; i++) {
-            Trains train = sortList.get(i);
-            results.add(train);
+            try {
+                Trains train = sortList.get(i);
+                results.add(train);
+            }catch(IndexOutOfBoundsException e){
+                break;
+            }
         }
         return results;
+    }
+
+    //指定した時間順にソートするメソッド
+    public int timeSort(Trains train1, Trains train2, String depOrArv) {
+
+        if (depOrArv.equals("depart")) {
+            if (train1.getArvTime() != train2.getArvTime()) {
+                return train1.getArvTime() < train2.getArvTime() ? -1 : 1;
+            } else {
+                return 0;
+            }
+        } else {
+            if (train1.getDepTime() != train2.getDepTime()) {
+                return train1.getDepTime() < train2.getDepTime() ? 1 : -1;
+            } else {
+                return 0;
+            }
+        }
     }
 }

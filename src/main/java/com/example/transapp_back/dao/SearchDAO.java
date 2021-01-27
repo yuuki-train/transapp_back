@@ -39,7 +39,12 @@ public class SearchDAO {
         String value1;
         String value2 = "lineJ";
         String value3 = "addFee";
-        Document sort = new Document("arvTime",-1);
+        Document depSort = new Document("depTime",1);
+        Document arvSort = new Document("arvTime",-1);
+
+        //指定時刻からの検索可能時間差を指定する。
+        int within = 0;
+        int checkTime;
 
         for (String line : lines) {
 
@@ -48,26 +53,43 @@ public class SearchDAO {
             if(depOrArv.equals("depart")) {
                 value1 = "depTime";
 
+                if(within != 0){
+                    checkTime = searchTime + within * 100;
+                }else{
+                    checkTime = 3000;
+                }
+
                 if (addFeeTrain) {
-                    iterator = trains.find(Filters.and(Filters.gte(value1, searchTime),Filters.eq(value2, line)
-                    )).limit(theNumberOfSearch);
-                } else {
                     iterator = trains.find(Filters.and(Filters.and(
-                            Filters.gte(value1, searchTime), Filters.eq(value2, line)), Filters.eq(value3, addFeeTrain)
-                    )).limit(theNumberOfSearch);
+                            Filters.gte(value1, searchTime), Filters.lte(value1, checkTime)),
+                            Filters.eq(value2, line))
+                    ).limit(theNumberOfSearch).sort(depSort);
+                } else {
+                    iterator = trains.find(Filters.and(Filters.and(Filters.and(
+                            Filters.gte(value1, searchTime), Filters.lte(value1, checkTime)),
+                            Filters.eq(value2, line)), Filters.eq(value3, addFeeTrain))
+                    ).limit(theNumberOfSearch).sort(depSort);
                 }
 
             }else{
                 value1 = "arvTime";
 
+                if(within != 0){
+                    checkTime = searchTime - within * 100;
+                }else{
+                    checkTime = 0;
+                }
+
                 if (addFeeTrain) {
-                    iterator = trains.find().filter(Filters.and(
-                            Filters.lte(value1, searchTime), Filters.eq(value2, line)
-                    )).limit(theNumberOfSearch).sort(sort);
-                } else {
                     iterator = trains.find(Filters.and(Filters.and(
-                            Filters.lte(value1, searchTime), Filters.eq(value2, line)),Filters.eq(value3, addFeeTrain)
-                    )).limit(theNumberOfSearch).sort(sort);
+                            Filters.gte(value1, checkTime), Filters.lte(value1, searchTime)),
+                            Filters.eq(value2, line))
+                    ).limit(theNumberOfSearch).sort(arvSort);
+                } else {
+                    iterator = trains.find(Filters.and(Filters.and(Filters.and(
+                            Filters.gte(value1, checkTime), Filters.lte(value1, searchTime)),
+                            Filters.eq(value2, line)), Filters.eq(value3, addFeeTrain))
+                    ).limit(theNumberOfSearch).sort(arvSort);
                 }
             }
 
