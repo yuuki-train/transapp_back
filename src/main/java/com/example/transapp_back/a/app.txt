@@ -1,0 +1,41 @@
+import React, { Component } from 'react';
+import logo from './logo.svg';
+import './App.css';
+
+class App extends Component{
+
+  constructor(){
+    super()
+    this.state = {
+      total:''
+    }
+  }
+
+  componentDidUpdate(){
+    fetch('http://localhost:8080/test')
+      .then(res =>json())
+      .then(json =>{
+        this.setState({total: json})
+      })
+
+  }
+
+  render() {
+    return (
+      <div className="App">
+        <div className="Main">
+          <h3>足し算マシーン</h3>
+            <form action="http://localhost:8080/test" method = "post">
+              <input type="text" name="leftNumber" placeholder="足される数"/>+
+              <input type="text" name="rightNumber" placeholder="足す数"/>=
+              {this.state.total}<br/>
+              <button type="submit">計算</button>
+            </form>
+        </div>
+      </div>
+    );
+  }
+
+}
+
+export default App;
