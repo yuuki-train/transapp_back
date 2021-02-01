@@ -3,6 +3,7 @@ package com.example.transapp_back.logic;
 import com.example.transapp_back.entity.Trains;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -10,6 +11,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+@CrossOrigin(origins = "*")
 public class SendLogic {
 
     public String toJavaScript(List<Trains> sortList) throws JsonProcessingException {

@@ -6,13 +6,14 @@ import com.mongodb.client.*;
 
 import com.mongodb.client.model.Filters;
 import org.bson.Document;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-
+@CrossOrigin(origins = "*")
 public class SearchDAO {
     public List<Document> getTrains(
             List<String> lines, String hour, String minute, String depOrArv, boolean addFeeTrain, int theNumberOfSearch

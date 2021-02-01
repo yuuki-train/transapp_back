@@ -6,20 +6,22 @@ import com.example.transapp_back.logic.SearchLogic;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.bson.Document;
-import org.springframework.ui.Model;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.net.http.HttpHeaders;
 import java.util.List;
 import java.util.Map;
 
 @RestController
+@CrossOrigin(origins = "*")
 public class SearchController {
-    @RequestMapping(value = "/search", method = {RequestMethod.GET})
-    @ResponseBody
-    public String search(Model model, @RequestParam Map<String, String> requestParams) {
+
+    @RequestMapping(value = "/search", method = {RequestMethod.POST}, produces="text/plain;charset=utf-8")
+    public String search(@RequestParam Map<String, String> requestParams) {
 
         boolean addFeeTrainCheck;
+        String result;
         try {
             String addFeeTrain = requestParams.get("addFeeTrain");
             addFeeTrainCheck = true;
@@ -54,21 +56,25 @@ public class SearchController {
             //表示するデータを並び変えて選択する
             List<Trains> sortList = new SearchLogic().sortTrains(trainsList, depOrArv, priority, theNumberOfSearch);
 
+            System.out.println(sortList.get(0).getDepTime());
+
             ObjectMapper mapper = new ObjectMapper();
 
             String jsonData = mapper.writeValueAsString(sortList);
 
-            model.addAttribute("result", jsonData);
+            System.out.println(jsonData);
 
-            return jsonData;
+            result = jsonData;
 
         }catch(NullPointerException eNull){
-            return "出発駅と到着駅を正しく指定してください";
+            eNull.printStackTrace();
+            result = "出発駅と到着駅を正しく指定してください";
         }catch(JsonProcessingException eJson){
             eJson.printStackTrace();
-            return "JSON変換でエラーが発生しました。再検索ください。";
+            result = "JSON変換でエラーが発生しました。再検索してください";
         }
 
+        return result;
     }
 
 }

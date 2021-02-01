@@ -1,7 +1,10 @@
 package com.example.transapp_back.entity;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
+
 import java.util.ArrayList;
 
+@CrossOrigin(origins = "*")
 public class Lines {
     private final ArrayList<String> CandidateLines;
     private final ArrayList<ArrayList<String>> Stations;

@@ -6,11 +6,13 @@ import com.example.transapp_back.entity.Trains;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.bson.Document;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@CrossOrigin(origins = "*")
 public class SearchLogic {
     //検索する路線を絞り込むメソッド
     public List<String> checkLines(String departure, String destination) {

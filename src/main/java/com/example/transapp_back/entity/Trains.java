@@ -1,5 +1,8 @@
 package com.example.transapp_back.entity;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
+
+@CrossOrigin(origins = "*")
 public class Trains {
     //フィールド
     private String id;
