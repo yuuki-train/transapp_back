@@ -1,8 +1,7 @@
 package com.example.transapp_back.logic;
 
-import com.example.transapp_back.dao.SearchDAO;
 import com.example.transapp_back.entity.Lines;
-import com.example.transapp_back.entity.Trains;
+import com.example.transapp_back.entity.Train;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.bson.Document;
@@ -48,8 +47,8 @@ public class SearchLogic {
     }
 
     //取得したデータをTrainsクラスに格納するメソッド
-    public List<Trains> setTrainsClass(List<Document> trains) {
-        List<Trains> trainsList = new ArrayList<>();
+    public List<Train> setTrainClass(List<Document> trains) {
+        List<Train> trainList = new ArrayList<>();
 
         for (Document train : trains) {
             String id = train.getString("_id");
@@ -67,7 +66,7 @@ public class SearchLogic {
             int fair = train.getInteger("fair");
             int fee = train.getInteger("fee");
             int changeTrain = train.getInteger("changeTrain");
-            Trains elements = new Trains();
+            Train elements = new Train();
 
             int totalCharge = fair + fee;
 
@@ -89,17 +88,17 @@ public class SearchLogic {
             elements.setFee(fee);
             elements.setChangeTrain(changeTrain);
 
-            trainsList.add(elements);
+            trainList.add(elements);
         }
-        return trainsList;
+        return trainList;
     }
 
     //検索データを整理し選択するメソッド
-    public List<Trains> sortTrains(List<Trains> trains, String depOrArv, String priority, int theNumberOfSearch) {
+    public List<Train> sortTrains(List<Train> trains, String depOrArv, String priority) {
 
         String faster = "faster";
         String cheaper = "cheaper";
-        List<Trains> sortList;
+        List<Train> sortList;
 
         sortList = trains.stream().sorted((train1, train2) -> {
             if (priority.equals(faster)) {
@@ -125,21 +124,11 @@ public class SearchLogic {
             }
         }).collect(Collectors.toList());
 
-        List<Trains> results = new ArrayList<>();
-
-        for (int i = 0; i < theNumberOfSearch; i++) {
-            try {
-                Trains train = sortList.get(i);
-                results.add(train);
-            }catch(IndexOutOfBoundsException e){
-                break;
-            }
-        }
-        return results;
+        return sortList;
     }
 
     //指定した時間順にソートするメソッド
-    public int timeSort(Trains train1, Trains train2, String depOrArv) {
+    public int timeSort(Train train1, Train train2, String depOrArv) {
 
         if (depOrArv.equals("depart")) {
             if (train1.getArvTime() != train2.getArvTime()) {
@@ -155,4 +144,35 @@ public class SearchLogic {
             }
         }
     }
+
+    public String selectTrains(List<Train> sortList, int theNumberOfSearch) {
+
+        List<Train> selectList = new ArrayList<>();
+        String result;
+
+        for (int i = 0; i < theNumberOfSearch; i++) {
+            try {
+                Train train = sortList.get(i);
+                selectList.add(train);
+            }catch(IndexOutOfBoundsException e){
+                break;
+            }
+        }
+
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            result = mapper.writeValueAsString(selectList);
+
+
+
+        }catch(JsonProcessingException e){
+            result = "error";
+        }
+
+        return result;
+
+    }
+
+
 }

@@ -3,7 +3,7 @@ package com.example.transapp_back.entity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 @CrossOrigin(origins = "*")
-public class Trains {
+public class Train {
     //フィールド
     private String id;
 
@@ -37,7 +37,7 @@ public class Trains {
 
     private int changeTrain;
 
-    public Trains() {
+    public Train() {
     }
 
     //getter
