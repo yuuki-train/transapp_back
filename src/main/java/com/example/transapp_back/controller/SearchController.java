@@ -16,14 +16,16 @@ public class SearchController {
     @RequestMapping(value = "/search", method = {RequestMethod.POST})
     public String search(@RequestParam Map<String, String> requestParams) {
 
-        boolean addFeeTrainCheck;
+        boolean addFeeTrain;
         String result;
+
         try {
-            String addFeeTrain = requestParams.get("addFeeTrain");
-            addFeeTrainCheck = true;
-        }catch(NullPointerException e){
-            addFeeTrainCheck = false;
+            String strAddFeeTrain = requestParams.get("addFeeTrain");
+            addFeeTrain = strAddFeeTrain.equals("use");
+        }catch(NullPointerException e) {
+            addFeeTrain = false;
         }
+
         try{
             String departure = requestParams.get("departure");
             String destination = requestParams.get("destination");
@@ -31,15 +33,16 @@ public class SearchController {
             String minute = requestParams.get("minute");
             String depOrArv = requestParams.get("depOrArv");
             String priority = requestParams.get("priority");
+            String strTheNumberOfSearch = requestParams.get("theNumberOfSearch");
 
-            int theNumberOfSearch = 3;
+            int theNumberOfSearch = Integer.parseInt(strTheNumberOfSearch);
 
             //入力した駅名に対応する路線を洗い出す
             List<String> lines = new SearchLogic().checkLines(departure, destination);
 
             //必要なデータを検索する
             List<Document> trains =  new SearchDAO().getTrains(
-                    lines, hour, minute, depOrArv, addFeeTrainCheck, theNumberOfSearch);
+                    lines, hour, minute, depOrArv, addFeeTrain, theNumberOfSearch);
 
             //Trainsクラスに格納する
             List<Train> trainList = new SearchLogic().setTrainClass(trains);
