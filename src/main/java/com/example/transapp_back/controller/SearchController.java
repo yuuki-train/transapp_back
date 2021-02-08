@@ -29,8 +29,9 @@ public class SearchController {
         try{
             String departure = requestParams.get("departure");
             String destination = requestParams.get("destination");
-            String hour = requestParams.get("hour");
-            String minute = requestParams.get("minute");
+            String time = requestParams.get("time");
+            String hour = time.substring(0,2);
+            String minute = time.substring(3);
             String depOrArv = requestParams.get("depOrArv");
             String priority = requestParams.get("priority");
             String strTheNumberOfSearch = requestParams.get("theNumberOfSearch");
