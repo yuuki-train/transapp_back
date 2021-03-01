@@ -9,11 +9,27 @@ import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
-import java.util.List;
-
 @CrossOrigin(origins = "*")
 public class SaveDAO {
-    public String saveData(List<String> jsonData) {
+
+    public long checkRecords() {
+        ConnectionString connection = new ConnectionString(
+                "mongodb+srv://yuuki:yuukidb@cluster0.wdfqa.mongodb.net/transapp?retryWrites=true&w=majority"
+            );
+        MongoClientSettings settings = MongoClientSettings.builder()
+                .applyConnectionString(connection)
+                .retryWrites(true)
+                .build();
+
+        MongoClient client = MongoClients.create(settings);
+        MongoDatabase database = client.getDatabase("transapp");
+        MongoCollection<Document> saveData = database.getCollection("savedata");
+        long records = saveData.countDocuments();
+        client.close();
+        return records;
+    }
+
+    public String save(Document data) {
         try {
             ConnectionString connection = new ConnectionString(
                     "mongodb+srv://yuuki:yuukidb@cluster0.wdfqa.mongodb.net/transapp?retryWrites=true&w=majority"
@@ -25,15 +41,16 @@ public class SaveDAO {
 
             MongoClient client = MongoClients.create(settings);
             MongoDatabase database = client.getDatabase("transapp");
-            MongoCollection<Document> save = database.getCollection("savedata");
+            MongoCollection<Document> saveData = database.getCollection("savedata");
 
-            //Document doc = Document.parse(jsonData);
-            //save.insertOne(doc);
-            return "{\"result\":\"OK\"}";
+            saveData.insertOne(data);
+            client.close();
+
+            return "[{\"result\":\"OK\"}]";
 
         } catch (Exception e) {
             e.printStackTrace();
-            return "{\"result\":\"ERROR\"}";
+            return "[{\"result\":\"ERROR\"}]";
         }
     }
 }
