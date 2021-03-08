@@ -22,4 +22,18 @@ public class SaveController {
         return result;
     }
 
+    @RequestMapping(value = "/history", method = {RequestMethod.POST})
+    public String search(@RequestParam Map<String, String> requestParams) {
+        String strYearAndMonth = requestParams.get("month");
+        String strYear = strYearAndMonth.substring(0,4);
+        String strMonth = strYearAndMonth.substring(5);
+        int year = Integer.parseInt(strYear);
+        int month = Integer.parseInt(strMonth);
+        String sort = requestParams.get("sort");
+        List<Document> historyData = new SaveDAO().getHistory(year, month, sort);
+
+
+    }
+
+
 }

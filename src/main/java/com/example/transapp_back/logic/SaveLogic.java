@@ -1,12 +1,14 @@
 package com.example.transapp_back.logic;
 
 import com.example.transapp_back.dao.SaveDAO;
+import com.example.transapp_back.entity.Train;
 import org.bson.Document;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*")
 public class SaveLogic {
@@ -65,6 +67,41 @@ public class SaveLogic {
         jsonData.append("}");
 
         return jsonData.toString();
+    }
+
+
+    //検索データを整理し選択するメソッド
+    public List<Train> sortTrains(List<Train> trains, String depOrArv, String priority) {
+
+        String faster = "faster";
+        String cheaper = "cheaper";
+        List<Train> sortList;
+
+        sortList = trains.stream().sorted((train1, train2) -> {
+            if (priority.equals(faster)) {
+
+                if (train1.getTotalMinutes() != train2.getTotalMinutes()) {
+                    return train1.getTotalMinutes() < train2.getTotalMinutes() ? -1 : 1;
+                }else {
+                    return new SearchLogic().timeSort(train1, train2, depOrArv);
+                }
+
+            }else if(priority.equals(cheaper)) {
+                if (train1.getTotalCharge() != train2.getTotalCharge()) {
+                    return train1.getTotalCharge() < train2.getTotalCharge() ? -1 : 1;
+                } else {
+                    return new SearchLogic().timeSort(train1, train2, depOrArv);
+                }
+            }else{
+                if (train1.getChangeTrain() != train2.getChangeTrain()) {
+                    return train1.getChangeTrain() < train2.getChangeTrain() ? -1 : 1;
+                } else {
+                    return new SearchLogic().timeSort(train1, train2, depOrArv);
+                }
+            }
+        }).collect(Collectors.toList());
+
+        return sortList;
     }
 
     public Document changeDocument(String jsonData){
