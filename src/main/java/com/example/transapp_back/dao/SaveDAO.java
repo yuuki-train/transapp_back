@@ -56,7 +56,7 @@ public class SaveDAO {
         }
     }
 
-    public List<Document> getHistory(int year, int month, String sort) {
+    public List<Document> getHistory(int year, int month) {
             ConnectionString connection = new ConnectionString(
                     "mongodb+srv://yuuki:yuukidb@cluster0.wdfqa.mongodb.net/transapp?retryWrites=true&w=majority"
             );
@@ -84,63 +84,4 @@ public class SaveDAO {
             return historyLists;
 
     }
-
-
-    //取得したデータをTrainsクラスに格納するメソッド
-    public List<Train> setTrainClass(List<Document> trains) {
-        List<Train> trainList = new ArrayList<>();
-
-        for (Document train : trains) {
-            String id = train.getString("_id");
-            String line = train.getString("lineJ");
-            String departure = train.getString("departure");
-            String depHour = train.getString("depHour");
-            String depMinute = train.getString("depMinute");
-            int depTime = train.getInteger("depTime");
-            String destination = train.getString("destination");
-            String arvHour = train.getString("arvHour");
-            String arvMinute = train.getString("arvMinute");
-            int arvTime = train.getInteger("arvTime");
-            int totalMinutes = train.getInteger("totalMinutes");
-            String trainType = train.getString("trainType");
-            int fair = train.getInteger("fair");
-            int fee = train.getInteger("fee");
-            int changeTrain = train.getInteger("changeTrain");
-            Train elements = new Train();
-
-            int totalCharge = fair + fee;
-
-
-            elements.setId(id);
-            elements.setLine(line);
-            elements.setDeparture(departure);
-            elements.setDepHour(depHour);
-            elements.setDepMinute(depMinute);
-            elements.setDepTime(depTime);
-            elements.setDestination(destination);
-            elements.setArvHour(arvHour);
-            elements.setArvMinute(arvMinute);
-            elements.setArvTime(arvTime);
-            elements.setTotalMinutes(totalMinutes);
-            elements.setTrainType(trainType);
-            elements.setTotalCharge(totalCharge);
-            elements.setFair(fair);
-            elements.setFee(fee);
-            elements.setChangeTrain(changeTrain);
-
-            trainList.add(elements);
-        }
-        return trainList;
-    }
-
-
-
-
-
-
-
-
-
-
-
 }

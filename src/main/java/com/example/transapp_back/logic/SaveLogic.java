@@ -1,12 +1,16 @@
 package com.example.transapp_back.logic;
 
 import com.example.transapp_back.dao.SaveDAO;
+import com.example.transapp_back.entity.History;
 import com.example.transapp_back.entity.Train;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.bson.Document;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,6 +26,10 @@ public class SaveLogic {
         String jsonData = makeJsonData(dataList, id);
         //Document形式に変換して返す
         return changeDocument(jsonData);
+    }
+
+    public Document changeDocument(String jsonData){
+        return Document.parse(jsonData);
     }
 
     public long makeId(){
@@ -69,43 +77,71 @@ public class SaveLogic {
         return jsonData.toString();
     }
 
+    //取得したデータをTrainsクラスに格納するメソッド
+    public List<History> setHistoryClass(List<Document> historiesFromDB) {
+        List<History> historiesList = new ArrayList<>();
+        History history = new History();
 
+        for (Document historyDocument : historiesFromDB) {
+            history.setId(historyDocument.getInteger("id"));
+            history.setYear(historyDocument.getInteger("year"));
+            history.setMonth(historyDocument.getInteger("month"));
+            history.setADay(historyDocument.getInteger("aDay"));
+            history.setDay(historyDocument.getString("day"));
+            history.setLine(historyDocument.getString("line"));
+            history.setDeparture(historyDocument.getString("departure"));
+            history.setDepHour(historyDocument.getString("depHour"));
+            history.setDepMinute(historyDocument.getString("depMinute"));
+            history.setDestination(historyDocument.getString("destination"));
+            history.setArvHour(historyDocument.getString("arvHour"));
+            history.setArvMinute(historyDocument.getString("arvMinute"));
+            history.setTotalMinutes(historyDocument.getInteger("totalMinutes"));
+            history.setTrainType(historyDocument.getString("trainType"));
+            history.setTotalCharge(historyDocument.getInteger("totalCharge"));
+            history.setFair(historyDocument.getInteger("fair"));
+            history.setFee(historyDocument.getInteger("fee"));
+            history.setChangeTrain(historyDocument.getInteger("changeTrain"));
+            historiesList.add(history);
+        }
+        System.out.println(historiesList.get(0).getId());
+        System.out.println(historiesList.get(1).getId());
+        return historiesList;
+    }
     //検索データを整理し選択するメソッド
-    public List<Train> sortTrains(List<Train> trains, String depOrArv, String priority) {
+    public List<History> sortHistoryList(List<History> historiesList, String sortWith) {
 
-        String faster = "faster";
-        String cheaper = "cheaper";
-        List<Train> sortList;
+        List<History> sortedHistoriesList = new ArrayList<>();
 
-        sortList = trains.stream().sorted((train1, train2) -> {
-            if (priority.equals(faster)) {
-
-                if (train1.getTotalMinutes() != train2.getTotalMinutes()) {
-                    return train1.getTotalMinutes() < train2.getTotalMinutes() ? -1 : 1;
-                }else {
-                    return new SearchLogic().timeSort(train1, train2, depOrArv);
-                }
-
-            }else if(priority.equals(cheaper)) {
-                if (train1.getTotalCharge() != train2.getTotalCharge()) {
-                    return train1.getTotalCharge() < train2.getTotalCharge() ? -1 : 1;
-                } else {
-                    return new SearchLogic().timeSort(train1, train2, depOrArv);
-                }
-            }else{
-                if (train1.getChangeTrain() != train2.getChangeTrain()) {
-                    return train1.getChangeTrain() < train2.getChangeTrain() ? -1 : 1;
-                } else {
-                    return new SearchLogic().timeSort(train1, train2, depOrArv);
-                }
+        if (sortWith.contains("date")) {
+            if (sortWith.contains("desc")) {
+                Collections.reverse(historiesList);
             }
-        }).collect(Collectors.toList());
-
-        return sortList;
+            sortedHistoriesList = historiesList;
+        } else {
+            if (sortWith.contains("desc")) {
+                sortedHistoriesList = historiesList.stream().sorted((train1, train2) -> {
+                    if (train1.getTotalCharge() != train2.getTotalCharge()) {
+                        return train1.getTotalCharge() < train2.getTotalCharge() ? 1 : -1;
+                    } else {
+                        return 0;
+                    }
+                }).collect(Collectors.toList());
+            } else {
+                sortedHistoriesList = historiesList.stream().sorted((train1, train2) -> {
+                    if (train1.getTotalCharge() != train2.getTotalCharge()) {
+                        return train1.getTotalCharge() < train2.getTotalCharge() ? -1 : 1;
+                    } else {
+                        return 0;
+                    }
+                }).collect(Collectors.toList());
+            }
+        }
+        return sortedHistoriesList;
     }
 
-    public Document changeDocument(String jsonData){
-        return Document.parse(jsonData);
-    }
 
+    public String changeJson(List<History> sortedHistoriesList) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(sortedHistoriesList);
+    }
 }
