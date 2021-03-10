@@ -80,9 +80,8 @@ public class SaveLogic {
     //取得したデータをTrainsクラスに格納するメソッド
     public List<History> setHistoryClass(List<Document> historiesFromDB) {
         List<History> historiesList = new ArrayList<>();
-        History history = new History();
-
         for (Document historyDocument : historiesFromDB) {
+            History history = new History();
             history.setId(historyDocument.getInteger("id"));
             history.setYear(historyDocument.getInteger("year"));
             history.setMonth(historyDocument.getInteger("month"));
@@ -103,22 +102,20 @@ public class SaveLogic {
             history.setChangeTrain(historyDocument.getInteger("changeTrain"));
             historiesList.add(history);
         }
-        System.out.println(historiesList.get(0).getId());
-        System.out.println(historiesList.get(1).getId());
         return historiesList;
     }
     //検索データを整理し選択するメソッド
     public List<History> sortHistoryList(List<History> historiesList, String sortWith) {
 
-        List<History> sortedHistoriesList = new ArrayList<>();
+        List<History> sortedHistoriesList;
 
         if (sortWith.contains("date")) {
-            if (sortWith.contains("desc")) {
+            if (sortWith.contains("Desc")) {
                 Collections.reverse(historiesList);
             }
             sortedHistoriesList = historiesList;
         } else {
-            if (sortWith.contains("desc")) {
+            if (sortWith.contains("Desc")) {
                 sortedHistoriesList = historiesList.stream().sorted((train1, train2) -> {
                     if (train1.getTotalCharge() != train2.getTotalCharge()) {
                         return train1.getTotalCharge() < train2.getTotalCharge() ? 1 : -1;
